@@ -1,0 +1,25 @@
+{
+    "name": "payment/zarinpal",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hamed Soleymani",
+            "email": "hamedslyn@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Zarinpal\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Zarinpal\\Providers\\ZarinpalServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}
