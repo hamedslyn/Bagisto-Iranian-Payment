@@ -1,2 +1,2 @@
-# bagisto_iranian_payment
-Implement Zarinpal payment in Bagisto
+# Bagisto Iranian Payment
+Implement Zarinpal payment in Bagisto Ecommerce
