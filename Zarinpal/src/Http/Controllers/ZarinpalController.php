@@ -9,6 +9,7 @@ use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Sales\Repositories\InvoiceRepository;
 use Webkul\Sales\Repositories\OrderItemRepository;
 use Webkul\Sales\Repositories\RefundRepository;
+use Webkul\Sales\Transformers\OrderResource;
 use Webkul\Zarinpal\Models\Zarinpal;
 use Webkul\Zarinpal\Repositories\ZarinpalRepository;
 use Redirect;
@@ -162,7 +163,11 @@ class ZarinpalController extends Controller
                         Log::warning('security', $securityAlert);
                         return redirect()->route('shop.checkout.onepage.index');
                     }
-                    $order  = $this->orderRepository->create(Cart::prepareDataForOrder());
+
+                    $data = (new OrderResource($cart))->jsonSerialize();
+
+                    $order = $this->orderRepository->create($data);
+
                     $params = [
                         'code'           => $verifyTransaction['data']['code'],
                         'message'        => $verifyTransaction['data']['message'],
@@ -181,7 +186,8 @@ class ZarinpalController extends Controller
                     if ($order->canInvoice()) {
                         $this->invoiceRepository->create($this->prepareInvoiceData($order));
                     }
-                    session()->flash('order', $order);
+                    session()->flash('order_id', $order->id);
+
                     return redirect()->route('shop.checkout.onepage.success');
                 } else {
                     session()->flash('error', trans('zarinpal::app.zarinpal.front.failure-message', [], 'fa'));
@@ -202,6 +208,14 @@ class ZarinpalController extends Controller
     protected function verify(string $authorityCode): array
     {
         $cart              = Cart::getCart();
+
+        if(!$cart){
+            $response['data']['message']   = "Security problem in part 0";
+            $response['data']['authority'] = $authorityCode;
+            Log::warning('security', $response);
+            return $response;
+        }
+
         $sendDataForVerify = [
             "merchant_id" => $this->merchantId,
             "amount"      => $cart->base_grand_total * 10,
