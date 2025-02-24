@@ -20,6 +20,8 @@ class ZarinpalController extends Controller
 
     const PAYMENT_OK = 'OK';
 
+    const REFERER_ID = "02RL0ss";
+
     const DESCRIPTION_CONTENT = 'User-';
 
     protected $_config;
@@ -111,14 +113,15 @@ class ZarinpalController extends Controller
         $cart                        = Cart::getCart();
         $userEmail                   = $cart->shipping_address->email;
         $sendDataForGetAuthorityCode = [
-            "merchant_id"  => $this->merchantId,
-            "amount"       => $cart->base_grand_total * 10,
-            "callback_url" => $this->callbackUrl,
-            "description"  => self::DESCRIPTION_CONTENT . $userEmail,
-            "metadata"     => [
-                "mobile" => $cart->shipping_address->phone,
-                "email"  => $cart->shipping_address->email,
-            ],
+             "merchant_id"  => $this->merchantId,
+             "amount"       => $cart->base_grand_total * 10,
+             "callback_url" => $this->callbackUrl,
+             "description"  => self::DESCRIPTION_CONTENT . $userEmail,
+             "referer_id"   => self::REFERER_ID,
+             "metadata"     => [
+                  "mobile" => $cart->shipping_address->phone,
+                  "email"  => $cart->shipping_address->email,
+             ],
         ];
 
         $response = $this->client->post($this->requestUrl, $sendDataForGetAuthorityCode);
